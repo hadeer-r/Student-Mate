@@ -7,5 +7,6 @@ import androidx.room.PrimaryKey
 data class Student(
     @PrimaryKey(autoGenerate = true) val id: Int = 1,
     val name: String,
+    val email: String,
     val password: String
 )
