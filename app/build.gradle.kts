@@ -6,14 +6,12 @@ plugins {
 
 android {
     namespace = "com.example.studentmate"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 34 
 
     defaultConfig {
         applicationId = "com.example.studentmate"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 34 
         versionCode = 1
         versionName = "1.0"
 
@@ -42,6 +40,9 @@ android {
 }
 
 dependencies {
+    implementation(project(":gpa_module"))
+    implementation("io.flutter:flutter_embedding_debug:1.0.0")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -50,6 +51,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
