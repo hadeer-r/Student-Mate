@@ -10,7 +10,7 @@ import com.example.studentmate.Data.Models.Student
 import com.example.studentmate.Data.Models.Subject
 
 @Entity(
-    tableName = "assessments",
+    tableName = "subject_and_student",
     foreignKeys = [
         ForeignKey(
             entity = Subject::class,
