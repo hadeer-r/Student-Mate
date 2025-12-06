@@ -21,5 +21,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "StudentMate"
 include(":app")
-include(":gpa_module")
-project(":gpa_module").projectDir = File("gpa_module")

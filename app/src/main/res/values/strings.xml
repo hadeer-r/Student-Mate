@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">StudentMate</string>
+    <string name="title_activity_select_subjects">SelectSubjectsActivity</string>
 </resources>
