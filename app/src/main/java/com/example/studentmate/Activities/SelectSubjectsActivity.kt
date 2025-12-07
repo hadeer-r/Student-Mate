@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -39,7 +40,6 @@ class SelectSubjectsActivity : ComponentActivity() {
         }
     }
 }
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SelectSubjectsScreen() {
@@ -49,7 +49,8 @@ fun SelectSubjectsScreen() {
             Subject(1, "Data Structures", "Exam"),
             Subject(2, "Web Development", "Assignment"),
             Subject(3, "Database Systems", "Exam"),
-            Subject(4, "Mobile Computing", "Assignment")
+            Subject(4, "Mobile Computing", "Assignment"),
+
         )
     }
 
@@ -101,7 +102,7 @@ fun SelectSubjectsScreen() {
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
-            //   (LazyColumn)
+
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -109,8 +110,7 @@ fun SelectSubjectsScreen() {
                     SubjectItem(
                         subject = subject,
                         onClick = {
-                            // منطق التحديث: نعكس قيمة الاختيار
-                            // نحتاج للبحث عن العنصر وتعديله داخل القائمة لتشغيل التحديث
+                            //  reflect the choice
                             val index = subjects.indexOf(subject)
                             if (index != -1) {
                                 subjects[index] = subjects[index].copy(isSelected = !subject.isSelected)
@@ -131,7 +131,7 @@ fun SelectSubjectsScreen() {
                         text = "$selectedCount subjects selected",
                         color = Color(0xFF2196F3),
                         modifier = Modifier.padding(8.dp),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        textAlign = TextAlign.Center
                     )
                 }
             }

@@ -14,10 +14,15 @@
         <activity
             android:name=".MainActivity"
             android:exported="false"
-            android:label="@string/title_activity_select_subjects"
+            android:label="@string/title_activity_edit_item"
             android:theme="@style/Theme.StudentMate" />
         <activity
             android:name=".SelectSubjectsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_select_subjects"
+            android:theme="@style/Theme.StudentMate" />
+        <activity
+            android:name=".EditItemActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.StudentMate">
