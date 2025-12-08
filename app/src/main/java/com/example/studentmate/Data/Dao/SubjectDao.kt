@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
@@ -24,18 +23,15 @@ interface SubjectDao {
     suspend fun delete(subject: Subject)
 
     @Query("SELECT * FROM subjects")
-    suspend fun getAll(): LiveData<List<Subject>>
+    fun getAll(): LiveData<List<Subject>>
 
     @Query("SELECT * FROM subjects WHERE id=:id")
-    suspend fun getById(id: Int): LiveData<Subject>
+    fun getById(id: Int): LiveData<Subject>
 
-    @Insert()
+    @Insert
     suspend fun insertStudentSubjectCrossRef(crossRef: SubjectsAndStudents)
 
+    // In SubjectDao.kt
     @Transaction
-    @Query("SELECT * FROM subjects WHERE id = :studentId")
-    suspend fun getStudentSubjects(studentId: Int): LiveData<List<StudentWithSubjects>>
-
-
-
-}
+    @Query("SELECT * FROM students WHERE id = :studentId")
+    fun getStudentSubjects(studentId: Int): LiveData<List<StudentWithSubjects>>}

@@ -10,6 +10,7 @@ import com.example.studentmate.Data.Models.Student
 import com.example.studentmate.Data.Models.Subject
 
 @Entity(
+    primaryKeys = ["subjectId","studentId"],
     tableName = "subject_and_student",
     foreignKeys = [
         ForeignKey(
@@ -34,9 +35,27 @@ data class SubjectsAndStudents(
 data class StudentWithSubjects(
     @Embedded val student: Student,
     @Relation(
-        parentColumn = "studentId",
-        entityColumn = "subjectId",
-        associateBy = Junction(SubjectsAndStudents::class) // This tells Room to look at the middle table
+        parentColumn = "id",          // The PK in the Student entity
+        entityColumn = "id",          // The PK in the Subject entity
+        associateBy = Junction(
+            value = SubjectsAndStudents::class,
+            parentColumn = "studentId", // The column in the Junction table pointing to Student
+            entityColumn = "subjectId"  // The column in the Junction table pointing to Subject
+        )
     )
     val subjects: List<Subject>
+)
+
+data class SubjectsWithStudents(
+    @Embedded val subject: Subject,
+    @Relation(
+        parentColumn = "id",          // The PK in the Subject entity
+        entityColumn = "id",          // The PK in the Student entity
+        associateBy = Junction(
+            value = SubjectsAndStudents::class,
+            parentColumn = "subjectId", // The column in the Junction table pointing to Subject
+            entityColumn = "studentId"  // The column in the Junction table pointing to Student
+        )
+    )
+    val students: List<Student>
 )
