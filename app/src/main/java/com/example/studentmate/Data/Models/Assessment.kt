@@ -24,7 +24,7 @@ import java.util.Date
     ]
 )
 data class Assessment(
-    @PrimaryKey(autoGenerate = true) val id: Int = 1,
+    @PrimaryKey(autoGenerate = true) val id: Int =0,
     val subjectId: Int,
     val studentId: Int,
     val title: String,
@@ -32,6 +32,7 @@ data class Assessment(
     val deadline: Date,
     val score: Int,
     val isExam: Boolean,
+    val isDone: Boolean,
     val actualScore: Int,
 
     )

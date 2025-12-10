@@ -14,7 +14,7 @@ import com.example.studentmate.Data.Relations.SubjectsAndStudents
 @Dao
 interface SubjectDao {
     @Insert
-    suspend fun insert(subject: Subject)
+    suspend fun insert(subject: Subject): Long
 
     @Update
     suspend fun update(subject: Subject)

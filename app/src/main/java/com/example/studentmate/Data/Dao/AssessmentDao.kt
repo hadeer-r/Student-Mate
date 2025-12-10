@@ -13,7 +13,7 @@ import com.example.studentmate.Data.Models.Assessment
 interface AssessmentDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAssessment(assessment: Assessment)
+    suspend fun insertAssessment(assessment: Assessment): Long
 
     @Query("SELECT * FROM assessments")
     fun getAllAssessments(): LiveData<List<Assessment>>

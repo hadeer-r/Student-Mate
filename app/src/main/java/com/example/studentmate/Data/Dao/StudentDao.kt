@@ -11,7 +11,8 @@ import com.example.studentmate.Data.Models.Student
 @Dao
 interface StudentDao {
     @Insert
-    suspend fun insert(student: Student)
+    suspend fun insert(student: Student): Long
+
 
     @Update
     suspend fun update(student: Student)
