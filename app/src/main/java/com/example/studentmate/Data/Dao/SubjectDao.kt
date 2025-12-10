@@ -23,10 +23,10 @@ interface SubjectDao {
     suspend fun delete(subject: Subject)
 
     @Query("SELECT * FROM subjects")
-    fun getAll(): LiveData<List<Subject>>
+    suspend fun getAll(): List<Subject>
 
     @Query("SELECT * FROM subjects WHERE id=:id")
-    fun getById(id: Int): LiveData<Subject>
+    suspend fun getById(id: Int): Subject
 
     @Insert
     suspend fun insertStudentSubjectCrossRef(crossRef: SubjectsAndStudents)
@@ -34,4 +34,5 @@ interface SubjectDao {
     // In SubjectDao.kt
     @Transaction
     @Query("SELECT * FROM students WHERE id = :studentId")
-    fun getStudentSubjects(studentId: Int): LiveData<List<StudentWithSubjects>>}
+    suspend fun getStudentSubjects(studentId: Int): List<StudentWithSubjects>
+}

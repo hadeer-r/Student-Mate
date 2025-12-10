@@ -14,11 +14,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.lifecycleScope
 import com.example.studentmate.Data.AppDatabase
 import com.example.studentmate.Data.Models.Assessment
 import com.example.studentmate.Data.Models.Student
 import com.example.studentmate.Data.Models.Subject
 import com.example.studentmate.ui.theme.StudentMateTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,15 +30,19 @@ class MainActivity : ComponentActivity() {
         val studentDao = db.studentDao()
         val subjectDao = db.subjectDao()
         val assessmentDao = db.assessmentDao()
-
+        var scope = this.lifecycleScope
+        lateinit var students: List<Student>
+        lateinit var subjects: List<Subject>
+        lateinit var assessments: List<Assessment>
+        scope.launch {
+            students = studentDao.GetAll();
+             subjects = subjectDao.getAll();
+             assessments =assessmentDao.getAllAssessments();
+        }
         enableEdgeToEdge()
         setContent {
             StudentMateTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-
-                    val students by studentDao.GetAll().observeAsState(initial = emptyList())
-                    val subjects by subjectDao.getAll().observeAsState(initial = emptyList())
-                    val assessments by assessmentDao.getAllAssessments().observeAsState(initial = emptyList())
 
                     TestScreen(
                         students = students,

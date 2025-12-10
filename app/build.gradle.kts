@@ -18,6 +18,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
     }
 
     buildTypes {
@@ -39,6 +40,9 @@ android {
     buildFeatures {
         compose = true
     }
+     composeOptions {
+         kotlinCompilerExtensionVersion = "1.5.3" // ensure this matches your compose version
+     }
 }
 
 dependencies {
@@ -56,20 +60,33 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.foundation)
-    androidTestImplementation(libs.androidx.ui.text)
-    androidTestImplementation(libs.androidx.ui.test)
+    implementation(libs.androidx.material3)
+
+    // Testing libraries
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    androidTestImplementation(libs.androidx.ui.text)
+    androidTestImplementation(libs.androidx.ui.test)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    // Room
     implementation("androidx.room:room-runtime:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+
+    // Lifecycle
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.0")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0")
-    implementation("androidx.room:room-ktx:2.6.1")
+
+    // Compose specific
     implementation("androidx.compose.runtime:runtime-livedata:1.7.5")
     implementation("androidx.compose.material:material-icons-extended")
+
+    // Navigation - Keep only the correct, single line
+    implementation("androidx.navigation:navigation-compose:2.8.0-beta01")
+    // Remove the line with the typo: implementation("androidx.navigation:navigation-compse:2.4.0-rc01")
 }

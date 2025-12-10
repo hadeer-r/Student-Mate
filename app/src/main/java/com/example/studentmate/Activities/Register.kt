@@ -25,8 +25,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -72,7 +75,7 @@ class Register : ComponentActivity() {
 @Composable
 fun StudentMateRegisterScreen(db: AppDatabase) {
     var fullName by remember { mutableStateOf("") }
-    var username by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope ()
@@ -102,12 +105,12 @@ fun StudentMateRegisterScreen(db: AppDatabase) {
                     .background(color = BrandBlue, shape = CircleShape),
                 contentAlignment = Alignment.Center
             ) {
-//                Icon(
-//                    imageVector = Icons.Default.toString(""),
-//                    contentDescription = "Logo",
-//                    tint = Color.White,
-//                    modifier = Modifier.size(40.dp)
-//                )
+                Icon(
+                    imageVector = Icons.Default.School,
+                    contentDescription = "Logo",
+                    tint = Color.White,
+                    modifier = Modifier.size(40.dp)
+                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -139,17 +142,15 @@ fun StudentMateRegisterScreen(db: AppDatabase) {
                     onTextChange = { fullName = it }
                 )
             }
-
             Spacer(modifier = Modifier.height(8.dp))
-            // Username Field
+
             Column(modifier = Modifier.padding(16.dp)) {
                 LabeledTextFieldClickable(
-                    label = "Username / Student ID",
-                    text = username,
-                    placeholder = "Enter Your user name",
-                    onTextChange = { username = it }
-                )
-            }
+                    label = "Email",
+                    text = email,
+                    placeholder = "Enter your email",
+                    onTextChange = { email = it }
+                )}
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -190,7 +191,7 @@ fun StudentMateRegisterScreen(db: AppDatabase) {
                     fontSize = 14.sp
                 )
                 Text(
-                    text = "Log in",
+                    text = "Login",
                     color = BrandBlue, // Your custom color
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold, // Optional: Makes the link stand out
@@ -208,10 +209,10 @@ fun StudentMateRegisterScreen(db: AppDatabase) {
                 onClick = {
 //                      Log.d("password",password)
 //                    Log.d("confirmPassword",confirmPassword)
-                    if(username.isEmpty()||fullName.isEmpty()||password.isEmpty())
+                    if(email.isEmpty()||fullName.isEmpty()||password.isEmpty())
                         Toast.makeText(context, "all information required", Toast.LENGTH_SHORT).show()
                     else if(password.equals(confirmPassword))
-                        RegisterF(context,scope,fullName,username,password,db)
+                        RegisterF(context,scope,fullName,email,password,db)
                     else
                         Toast.makeText(context, "Confirm Password does not match", Toast.LENGTH_SHORT).show()                    },
                 modifier = Modifier
@@ -220,7 +221,7 @@ fun StudentMateRegisterScreen(db: AppDatabase) {
                 colors = ButtonDefaults.buttonColors(containerColor = BrandBlue),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text(text = "Log In", fontSize = 16.sp)
+                Text(text = "Register", fontSize = 16.sp)
             }
         }
 
@@ -286,10 +287,17 @@ fun RegisterF(context: Context,scope: CoroutineScope,name: String,email: String,
     scope.launch {
         db.studentDao().insert(Student(name=name,email=email,password=password))
         Log.d("studentT","true")
+
         Log.d("student",db.studentDao().GetAll().toString())
         goToLogin(context)
     }
-
+}
+@Preview(showBackground = true)
+@Composable
+fun RegisterPreview() {
+    MaterialTheme {
+        StudentMateRegisterScreen(AppDatabase.getDatabase(LocalContext.current))
+    }
 }
 fun goToLogin(context: Context)
 {

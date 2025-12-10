@@ -21,11 +21,11 @@ interface StudentDao {
     suspend fun delete(student: Student)
 
     @Query("SELECT * FROM students")
-    fun GetAll(): LiveData<List<Student>>
+    suspend fun GetAll(): List<Student>
 
     @Query("SELECT * FROM students WHERE id=:id ")
-    fun GetById(id: Int): LiveData<Student>
+    suspend fun GetById(id: Int): Student
 
     @Query("SELECT * FROM students WHERE password=:password AND email=:email")
-    fun GetByEmailAndPassword(password: String, email: String): LiveData<Student>
+    suspend fun GetByEmailAndPassword(password: String, email: String): Student?
 }

@@ -2,6 +2,7 @@ package com.example.studentmate.Activities
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.School
 //import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -33,25 +35,39 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.example.studentmate.Activities.ui.theme.StudentMateTheme
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
+import com.example.studentmate.Data.AppDatabase
+import com.example.studentmate.MainActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.math.log
 
 class Login : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        var db= AppDatabase.getDatabase(this)
         setContent {
             StudentMateTheme {
-               StudentMateLoginScreen()
+               StudentMateLoginScreen(db)
             }
         }
     }
 }
-
+enum class LoginNav{
+    Register,
+    Home
+}
 @Composable
-fun StudentMateLoginScreen() {
-    var username by remember { mutableStateOf("") }
+fun StudentMateLoginScreen(db: AppDatabase) {
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val context = LocalContext.current
+    var navController = rememberNavController()
 
 
     // Root container (Box allows us to overlap the Help icon at the bottom)
@@ -78,12 +94,12 @@ fun StudentMateLoginScreen() {
                     .background(color = BrandBlue, shape = CircleShape),
                 contentAlignment = Alignment.Center
             ) {
-//                Icon(
-//                    imageVector = Icons.Default.School
-//                    contentDescription = "Logo",
-//                    tint = Color.White,
-//                    modifier = Modifier.size(40.dp)
-//                )
+                Icon(
+                    imageVector = Icons.Default.School,
+                    contentDescription = "Logo",
+                    tint = Color.White,
+                    modifier = Modifier.size(40.dp)
+                )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -110,10 +126,10 @@ fun StudentMateLoginScreen() {
             // Username Field
             Column(modifier = Modifier.padding(16.dp)) {
               LabeledTextFieldClickable(
-                    label = "Username / Student ID",
-                    text = username,
+                    label = "Email",
+                    text = email,
                     placeholder = "Enter Your user name",
-                    onTextChange = { username = it }
+                    onTextChange = { email = it }
                 )
             }
 
@@ -162,9 +178,9 @@ fun StudentMateLoginScreen() {
             // --- Login Button ---
             Button(
                 onClick = {
-                    if(username.isEmpty()||password.isEmpty())
+                    if(email.isEmpty()||password.isEmpty())
                         Toast.makeText(context, "all information required", Toast.LENGTH_SHORT).show()
-                    else  Login(context,username,password)},
+                    else  Login(context, email ,password,db)},
                 modifier = Modifier
                     .fillMaxWidth(.9f)
                     .height(50.dp),
@@ -202,14 +218,32 @@ fun StudentMateLoginScreen() {
 @Composable
 fun LoginPreview() {
     MaterialTheme {
-        StudentMateLoginScreen()
+        StudentMateLoginScreen(db = AppDatabase.getDatabase(LocalContext.current))
     }
 }
-fun Login(context : Context,username: String,password: String) {
-    // TODO: implement
+fun Login(context: Context, email: String, password: String, db: AppDatabase) {
+
+    (context as? LifecycleOwner)?.lifecycleScope?.launch(Dispatchers.IO) {
+
+        val student = db.studentDao().GetByEmailAndPassword(password, email)
+        withContext(Dispatchers.Main) {
+            Log.d("Login", student.toString())
+
+            if (student != null) {
+                goToHome(context)
+            } else {
+                Toast.makeText(context, "Invalid Credentials", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 }
 fun goToRegister(context: Context)
 {
     val intent= Intent(context, Register::class.java)
+    context.startActivity((intent))
+}
+
+fun goToHome(context: Context) {
+    val intent = Intent(context, HomeActivity::class.java)
     context.startActivity((intent))
 }

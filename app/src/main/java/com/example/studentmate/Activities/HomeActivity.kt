@@ -33,7 +33,7 @@ import com.example.studentmate.Data.Models.Assessment
 import java.util.Calendar
 import java.util.Date
 
-class HomeActivity : AppCompatActivity() {
+class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val db = AppDatabase.getDatabase(this);

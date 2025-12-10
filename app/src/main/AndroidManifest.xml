@@ -14,14 +14,9 @@
 
         <activity
             android:name=".MainActivity"
-            android:exported="true"
+            android:exported="false"
             android:label="@string/app_name"
-            android:theme="@style/Theme.StudentMate">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/Theme.StudentMate"/>
 
         <activity
             android:name=".SelectSubjectsActivity"
@@ -35,7 +30,7 @@
             android:label="@string/title_activity_edit_item"
             android:theme="@style/Theme.StudentMate" />
         <activity
-            android:name=".HomeActivity"
+            android:name=".Activities.HomeActivity"
             android:exported="false"
             android:label="@string/title_activity_home"
             android:theme="@style/Theme.StudentMate" />
@@ -46,9 +41,14 @@
             android:theme="@style/Theme.StudentMate" />
         <activity
             android:name=".Activities.Login"
-            android:exported="false"
+            android:exported="true"
             android:label="@string/title_activity_login"
-            android:theme="@style/Theme.StudentMate" />
+            android:theme="@style/Theme.StudentMate">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".Activities.Register"
             android:exported="false"
