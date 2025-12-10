@@ -39,6 +39,21 @@
             android:exported="false"
             android:label="@string/title_activity_home"
             android:theme="@style/Theme.StudentMate" />
+            <activity
+            android:name=".Activities.Profile"
+            android:exported="false"
+            android:label="@string/title_activity_profile"
+            android:theme="@style/Theme.StudentMate" />
+        <activity
+            android:name=".Activities.Login"
+            android:exported="false"
+            android:label="@string/title_activity_login"
+            android:theme="@style/Theme.StudentMate" />
+        <activity
+            android:name=".Activities.Register"
+            android:exported="false"
+            android:label="@string/title_activity_register"
+            android:theme="@style/Theme.StudentMate"/>
 
     </application>
 
