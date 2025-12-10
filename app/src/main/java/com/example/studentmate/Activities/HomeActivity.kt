@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import com.example.studentmate.Data.AppDatabase
 import com.example.studentmate.ui.theme.StudentMateTheme
 import com.example.studentmate.Data.Models.Assessment
+import java.util.Calendar
 import java.util.Date
 
 class HomeActivity : AppCompatActivity() {
@@ -47,7 +48,6 @@ class HomeActivity : AppCompatActivity() {
 
 @Composable
 fun HomeScreen() {
-    // Sample Data based on your image
     val assessments = listOf(
         Assessment(
             1,
@@ -55,10 +55,10 @@ fun HomeScreen() {
             1,
             "Web development",
             "Assignment",
-             Date(2025, 11, 30),
+            Calendar.getInstance().apply { set(2025, Calendar.NOVEMBER, 30) }.time,
             100,
             false,
-false,
+    false,
             actualScore = 100
         ),
         Assessment(
@@ -66,8 +66,8 @@ false,
             2,
             1,
             "andriod exam",
-            "Assignment",
-            Date(2025, 11, 30),
+            "Assignment"
+            , Calendar.getInstance().apply { set(2025, Calendar.NOVEMBER, 30) }.time,
             0,
             true,
             false,

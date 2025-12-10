@@ -27,7 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.studentmate.ui.theme.StudentMateTheme
 
-
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.studentmate.ui.theme.StudentMateTheme
 
 data class EditItem(
     val id: Int = 0,
@@ -285,5 +286,14 @@ fun NotificationSwitch(isEnabled: Boolean, type: String, onToggle: (Boolean) -> 
             onCheckedChange = onToggle,
             colors = SwitchDefaults.colors(checkedTrackColor = Color(0xFF2196F3))
         )
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun SelectSubjectsScreenPreview() {
+    StudentMateTheme {
+        EditItemScreen()
     }
 }
