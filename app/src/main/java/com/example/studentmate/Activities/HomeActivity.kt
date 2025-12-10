@@ -32,7 +32,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.studentmate.Data.AppDatabase
-import com.example.studentmate.ui.theme.StudentMateTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Person
@@ -41,6 +40,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.modifier.modifierLocalConsumer
+import com.example.studentmate.Activities.ui.theme.StudentMateTheme
 import com.example.studentmate.Data.Models.Assessment
 
 class HomeActivity : AppCompatActivity() {
