@@ -5,45 +5,35 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.studentmate.Data.AppDatabase
 import com.example.studentmate.ui.theme.StudentMateTheme
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import com.example.studentmate.Data.Models.Assessment
+import java.util.Calendar
+import java.util.Date
 
-class HomeActivity : AppCompatActivity() {
+class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val db = AppDatabase.getDatabase(this);
@@ -58,7 +48,83 @@ class HomeActivity : AppCompatActivity() {
 
 @Composable
 fun HomeScreen() {
+    val assessments = listOf(
+        Assessment(
+            1,
+            1,
+            1,
+            "Web development",
+            "Assignment",
+            Calendar.getInstance().apply { set(2025, Calendar.NOVEMBER, 30) }.time,
+            100,
+            false,
+    false,
+            actualScore = 100
+        ),
+        Assessment(
+            2,
+            2,
+            1,
+            "andriod exam",
+            "Assignment"
+            , Calendar.getInstance().apply { set(2025, Calendar.NOVEMBER, 30) }.time,
+            0,
+            true,
+            false,
+            actualScore = 150
+        )
+    )
 
+    Scaffold(
+        containerColor = Color(0xFFF9FAFB),
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { /* Handle Add */ },
+                containerColor = Color(0xFF2196F3),
+                contentColor = Color.White,
+                shape = CircleShape
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Add")
+            }
+        }
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // 1. Header Section
+            item {
+                Header()
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+
+            // 2. Action Buttons
+            item {
+                DashboardButton(
+                    text = "My Subjects",
+                    icon = Icons.Default.Menu,
+                    backgroundColor = Color(0xFF8E24AA) // Purple
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                DashboardButton(
+                    text = "Calculate My GPA",
+                    icon = Icons.Default.Check,
+                    backgroundColor = Color(0xFF1E88E5) // Blue
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+            items(assessments) { item ->
+                AssessmentCard(item)
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(60.dp))
+            }
+        }
+    }
 }
 @Composable
 fun Header(){
@@ -184,9 +250,8 @@ fun AssessmentCard(item: Assessment){
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = item.deadline.toString(),
-                    color = Color.Gray,
                     fontSize = 14.sp,
-//                    color = Color.Gray
+                    color = Color.Gray
                 )
 
 

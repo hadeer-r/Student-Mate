@@ -11,7 +11,8 @@ import com.example.studentmate.Data.Models.Student
 @Dao
 interface StudentDao {
     @Insert
-    suspend fun insert(student: Student)
+    suspend fun insert(student: Student): Long
+
 
     @Update
     suspend fun update(student: Student)
@@ -20,11 +21,11 @@ interface StudentDao {
     suspend fun delete(student: Student)
 
     @Query("SELECT * FROM students")
-    fun GetAll(): LiveData<List<Student>>
+    suspend fun GetAll(): List<Student>
 
     @Query("SELECT * FROM students WHERE id=:id ")
-    fun GetById(id: Int): LiveData<Student>
+    suspend fun GetById(id: Int): Student
 
     @Query("SELECT * FROM students WHERE password=:password AND email=:email")
-    fun GetByEmailAndPassword(password: String, email: String): LiveData<Student>
+    suspend fun GetByEmailAndPassword(password: String, email: String): Student?
 }

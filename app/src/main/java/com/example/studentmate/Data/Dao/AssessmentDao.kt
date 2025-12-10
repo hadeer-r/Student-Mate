@@ -13,22 +13,22 @@ import com.example.studentmate.Data.Models.Assessment
 interface AssessmentDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAssessment(assessment: Assessment)
+    suspend fun insertAssessment(assessment: Assessment): Long
 
     @Query("SELECT * FROM assessments")
-    fun getAllAssessments(): LiveData<List<Assessment>>
+    suspend fun getAllAssessments(): List<Assessment>
 
     @Query("SELECT * FROM assessments WHERE id = :assessmentId")
     suspend fun getAssessmentById(assessmentId: Int): Assessment?
 
     @Query("SELECT * FROM assessments WHERE studentId = :studentId")
-    fun getAssessmentsForStudent(studentId: Int): LiveData<List<Assessment>>
+    suspend fun getAssessmentsForStudent(studentId: Int): List<Assessment>
 
     @Query("SELECT * FROM assessments WHERE subjectId = :subjectId")
-    fun getAssessmentsForSubject(subjectId: Int): LiveData<List<Assessment>>
+    suspend fun getAssessmentsForSubject(subjectId: Int): List<Assessment>
 
     @Query("SELECT * FROM assessments WHERE subjectId=:subjectId AND studentId=:studentId")
-    fun GetAssessmentByStudentIdAndSubjectId(subjectId: Int, studentId: Int): LiveData<Assessment>
+    suspend fun GetAssessmentByStudentIdAndSubjectId(subjectId: Int, studentId: Int): Assessment
 
     @Update
     suspend fun updateAssessment(assessment: Assessment)
