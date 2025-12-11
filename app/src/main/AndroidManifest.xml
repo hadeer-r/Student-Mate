@@ -11,19 +11,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.StudentMate">
-
+        <activity
+            android:name=".Activities.MySubjectsActivity"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="false"
             android:label="@string/app_name"
-            android:theme="@style/Theme.StudentMate"/>
-
+            android:theme="@style/Theme.StudentMate" />
         <activity
             android:name=".SelectSubjectsActivity"
             android:exported="false"
             android:label="@string/title_activity_select_subjects"
             android:theme="@style/Theme.StudentMate" />
-
         <activity
             android:name=".EditItemActivity"
             android:exported="false"
@@ -34,7 +34,7 @@
             android:exported="false"
             android:label="@string/title_activity_home"
             android:theme="@style/Theme.StudentMate" />
-            <activity
+        <activity
             android:name=".Activities.Profile"
             android:exported="false"
             android:label="@string/title_activity_profile"
@@ -46,15 +46,16 @@
             android:theme="@style/Theme.StudentMate">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".Activities.Register"
             android:exported="false"
             android:label="@string/title_activity_register"
-            android:theme="@style/Theme.StudentMate"/>
-
+            android:theme="@style/Theme.StudentMate" />
     </application>
 
 </manifest>

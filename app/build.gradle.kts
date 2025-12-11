@@ -8,7 +8,9 @@ plugins {
 android {
     namespace = "com.example.studentmate"
     compileSdk = 36
-
+    buildFeatures {
+        compose = true
+    }
     defaultConfig {
         applicationId = "com.example.studentmate"
         minSdk = 24
@@ -40,9 +42,6 @@ android {
     buildFeatures {
         compose = true
     }
-     composeOptions {
-         kotlinCompilerExtensionVersion = "1.5.3" // ensure this matches your compose version
-     }
 }
 
 dependencies {

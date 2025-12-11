@@ -28,6 +28,7 @@ import java.util.Date
     version = 1,
     exportSchema = false
 )
+
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun studentDao(): StudentDao

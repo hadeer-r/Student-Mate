@@ -1,10 +1,9 @@
 package com.example.studentmate.Activities
-
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,16 +31,15 @@ import com.example.studentmate.Data.AppDatabase
 import com.example.studentmate.ui.theme.StudentMateTheme
 import com.example.studentmate.Data.Models.Assessment
 import java.util.Calendar
-import java.util.Date
 
 class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val db = AppDatabase.getDatabase(this);
+        val db = AppDatabase.getDatabase(this)
         enableEdgeToEdge()
         setContent {
             StudentMateTheme {
-                HomeScreen();
+                HomeScreen()
             }
         }
     }
@@ -48,6 +47,8 @@ class HomeActivity : ComponentActivity() {
 
 @Composable
 fun HomeScreen() {
+    val context = LocalContext.current
+
     val assessments = listOf(
         Assessment(
             1,
@@ -58,7 +59,7 @@ fun HomeScreen() {
             Calendar.getInstance().apply { set(2025, Calendar.NOVEMBER, 30) }.time,
             100,
             false,
-    false,
+            false,
             actualScore = 100
         ),
         Assessment(
@@ -66,8 +67,8 @@ fun HomeScreen() {
             2,
             1,
             "andriod exam",
-            "Assignment"
-            , Calendar.getInstance().apply { set(2025, Calendar.NOVEMBER, 30) }.time,
+            "Assignment",
+            Calendar.getInstance().apply { set(2025, Calendar.NOVEMBER, 30) }.time,
             0,
             true,
             false,
@@ -106,16 +107,27 @@ fun HomeScreen() {
                 DashboardButton(
                     text = "My Subjects",
                     icon = Icons.Default.Menu,
-                    backgroundColor = Color(0xFF8E24AA) // Purple
+                    backgroundColor = Color(0xFF8E24AA),
+                    onClick = {
+                        // Navigate to My Subjects Activity
+                        // CHANGE THIS LINE:
+                        val intent = Intent(context, MySubjectsActivity::class.java)
+                        context.startActivity(intent)
+                    }
                 )
+
                 Spacer(modifier = Modifier.height(12.dp))
                 DashboardButton(
                     text = "Calculate My GPA",
                     icon = Icons.Default.Check,
-                    backgroundColor = Color(0xFF1E88E5) // Blue
+                    backgroundColor = Color(0xFF1E88E5),
+                    onClick = {
+                        // Add your GPA calculation navigation here
+                    }
                 )
                 Spacer(modifier = Modifier.height(24.dp))
             }
+
             items(assessments) { item ->
                 AssessmentCard(item)
             }
@@ -126,13 +138,14 @@ fun HomeScreen() {
         }
     }
 }
+
 @Composable
-fun Header(){
+fun Header() {
     Row(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
-    ){
+    ) {
         Column {
             Text(
                 text = "Hello, Sarah Johnson",
@@ -151,7 +164,7 @@ fun Header(){
             color = Color(0xFF2196F3),
             modifier = Modifier.size(40.dp)
         ) {
-            Box(contentAlignment = Alignment.Center){
+            Box(contentAlignment = Alignment.Center) {
                 Icon(
                     imageVector = Icons.Default.Person,
                     contentDescription = "Profile",
@@ -167,15 +180,16 @@ fun DashboardButton(
     text: String,
     icon: ImageVector,
     backgroundColor: Color,
-){
+    onClick: () -> Unit = {}
+) {
     Button(
-        onClick = { /* Handle button click */ },
+        onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
             .height(50.dp),
         colors = ButtonDefaults.buttonColors(containerColor = backgroundColor),
         shape = RoundedCornerShape(12.dp)
-    ){
+    ) {
         Icon(
             imageVector = icon,
             contentDescription = null,
@@ -187,16 +201,14 @@ fun DashboardButton(
 }
 
 @Composable
-fun AssessmentCard(item: Assessment){
-    var assessmentColor: Color
-    var assessmentType: String
+fun AssessmentCard(item: Assessment) {
+    val assessmentColor: Color
+    val assessmentType: String
 
-    if(item.isExam)
-    {
+    if (item.isExam) {
         assessmentColor = Color.Red
-        assessmentType="Exam"
-    }
-    else {
+        assessmentType = "Exam"
+    } else {
         assessmentColor = Color.Green
         assessmentType = "Assignment"
     }
@@ -206,7 +218,7 @@ fun AssessmentCard(item: Assessment){
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier.fillMaxWidth()
-    ){
+    ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
@@ -214,8 +226,7 @@ fun AssessmentCard(item: Assessment){
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Top
-
-            ){
+            ) {
                 Text(
                     text = item.title,
                     fontSize = 16.sp,
@@ -225,7 +236,6 @@ fun AssessmentCard(item: Assessment){
                 Surface(
                     color = assessmentColor,
                     shape = RoundedCornerShape(16.dp)
-
                 ) {
                     Text(
                         text = assessmentType,
@@ -237,10 +247,9 @@ fun AssessmentCard(item: Assessment){
             }
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Row 2
             Row(
                 verticalAlignment = Alignment.CenterVertically
-            ){
+            ) {
                 Icon(
                     imageVector = Icons.Default.DateRange,
                     contentDescription = null,
@@ -253,12 +262,9 @@ fun AssessmentCard(item: Assessment){
                     fontSize = 14.sp,
                     color = Color.Gray
                 )
-
-
             }
             Spacer(modifier = Modifier.height(8.dp))
 
-            // row 3
             Text(
                 text = item.description,
                 fontSize = 14.sp,
@@ -266,7 +272,6 @@ fun AssessmentCard(item: Assessment){
             )
 
             Spacer(modifier = Modifier.height(8.dp))
-
 
             Surface(
                 color = Color(0xFFE8F5E9),
