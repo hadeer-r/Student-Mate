@@ -6,5 +6,6 @@
     <string name="title_activity_register">Register</string>
     <string name="title_activity_login">Login</string>
     <string name="title_activity_profile">Profile</string>
-    <string name = "title_activity_home">Home</string>
+    <string name="title_activity_home">Home</string>
+    <string name="title_activity_add_assignment">AddAssignment</string>
 </resources>

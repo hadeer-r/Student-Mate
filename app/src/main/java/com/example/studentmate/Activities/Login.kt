@@ -41,6 +41,7 @@ import com.example.studentmate.Activities.ui.theme.StudentMateTheme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.example.studentmate.Data.AppDatabase
+import com.example.studentmate.Data.Models.Student
 import com.example.studentmate.MainActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -62,6 +63,7 @@ enum class LoginNav{
     Register,
     Home
 }
+
 @Composable
 fun StudentMateLoginScreen(db: AppDatabase) {
     var email by remember { mutableStateOf("") }
@@ -230,7 +232,7 @@ fun Login(context: Context, email: String, password: String, db: AppDatabase) {
             Log.d("Login", student.toString())
 
             if (student != null) {
-                goToHome(context)
+                goToHome(context, student)
             } else {
                 Toast.makeText(context, "Invalid Credentials", Toast.LENGTH_SHORT).show()
             }
@@ -243,7 +245,15 @@ fun goToRegister(context: Context)
     context.startActivity((intent))
 }
 
-fun goToHome(context: Context) {
-    val intent = Intent(context, HomeActivity::class.java)
+fun goToHome(context: Context, student: Student) {
+    val bundle = Bundle().apply {
+        putString("name", student.name)
+        putString("email", student.email)
+        putString("password", student.password)
+        putBoolean("notificationsEnabled",student.notificationsEnabled)
+    }
+
+    val intent = Intent(context, HomeActivity::class.java);
+    intent.putExtras(bundle)
     context.startActivity((intent))
 }

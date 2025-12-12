@@ -8,5 +8,6 @@ data class Student(
     @PrimaryKey(autoGenerate = true) var  id: Int = 0,
     var name: String,
     var email: String,
-    var password: String
+    var password: String,
+    var notificationsEnabled: Boolean
 )

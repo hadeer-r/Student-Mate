@@ -74,7 +74,8 @@ abstract class AppDatabase : RoomDatabase() {
                 val student1 = Student(
                     name = "John Doe",
                     email = "john.doe@example.com",
-                    password = "password"
+                    password = "password",
+                    notificationsEnabled = true
                 )
 
                 // CRITICAL: Capture the generated ID
