@@ -248,6 +248,7 @@ fun goToHome(context: Context, student: Student) {
         putString("name", student.name)
         putString("email", student.email)
         putString("password", student.password)
+        putInt("id", student.id)
     }
 
     val intent = Intent(context, HomeActivity::class.java);

@@ -51,6 +51,7 @@ class HomeActivity : ComponentActivity() {
                 password = bundle.getString("password")!!,
                 name = bundle.getString("name")!!,
                 email = bundle.getString("email")!!,
+                id = bundle.getInt("id")
 
             )
         }

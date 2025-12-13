@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.foundation)
     implementation(libs.androidx.material3)
+    implementation(libs.core.ktx)
 
     // Testing libraries
     testImplementation(libs.junit)
@@ -90,4 +91,11 @@ dependencies {
 
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.8.0-beta01")
+
+    // for testing
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("androidx.room:room-testing:2.6.1")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation("org.robolectric:robolectric:4.11.1")
 }

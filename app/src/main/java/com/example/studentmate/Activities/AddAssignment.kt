@@ -1,5 +1,6 @@
 package com.example.studentmate.Activities
 
+import android.content.Context
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -30,7 +31,6 @@ import com.example.studentmate.Data.Models.Assessment
 import com.example.studentmate.Data.Models.Student
 import com.example.studentmate.Data.Models.Subject
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -63,6 +63,7 @@ class AddAssignment : ComponentActivity() {
 @Composable
 fun AddItemScreen(db: AppDatabase, loggedUser: Student?) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
 
     // Form State
@@ -278,20 +279,14 @@ fun AddItemScreen(db: AppDatabase, loggedUser: Student?) {
                             studentId = loggedUser?.id ?: 0,
                             title = title,
                             description = description,
-                            deadline = selectedDateValue, // Passing the actual Date Object
+                            deadline = selectedDateValue,
                             score = scoreInt,
                             isExam = selectedType == "Exam",
                             isDone = false,
                             actualScore = actualScoreInt
                         )
 
-                        CoroutineScope(Dispatchers.IO).launch {
-                            db.assessmentDao().insertAssessment(newAssessment)
-                        }
-
-                        // Optional: Finish activity or show success message
-                        Toast.makeText(context, "Added Successfully", Toast.LENGTH_SHORT).show()
-                        (context as? ComponentActivity)?.finish()
+                        addAssessment(scope, context, db, newAssessment,loggedUser)
 
                     } else {
                         Toast.makeText(context, "Please fill required fields", Toast.LENGTH_SHORT).show()
@@ -310,7 +305,7 @@ fun AddItemScreen(db: AppDatabase, loggedUser: Student?) {
     }
 }
 
-// --- NEW REUSABLE INPUT FUNCTION ---
+
 @Composable
 fun StudentMateInput(
     value: String,
@@ -355,5 +350,14 @@ fun TypeButton(text: String, isSelected: Boolean, modifier: Modifier = Modifier,
 fun AddItemPreview() {
     StudentMateTheme {
         AddItemScreen(db = AppDatabase.getDatabase(LocalContext.current),null)
+    }
+}
+fun addAssessment(scope: CoroutineScope, context: Context, db: AppDatabase, assessment: Assessment, student: Student?) {
+    scope.launch {
+        db.assessmentDao().insertAssessment(assessment)
+    }
+    Toast.makeText(context, "Added Successfully", Toast.LENGTH_SHORT).show()
+    if(student!=null){
+        goToHome(context, student)
     }
 }
