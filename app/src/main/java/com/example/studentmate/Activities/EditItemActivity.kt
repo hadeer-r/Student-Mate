@@ -145,7 +145,6 @@ fun EditItemScreen() {
                 placeholder = "Add notes or details about this item"
             ) { description = it }
 
-            NotificationSwitch(isNotificationEnabled, selectedType) { isNotificationEnabled = it }
 
             Spacer(modifier = Modifier.height(60.dp))
         }
@@ -264,28 +263,6 @@ fun TypeButton(text: String, isSelected: Boolean, color: Color, modifier: Modifi
         Box(contentAlignment = Alignment.Center) {
             Text(text = text, color = textColor, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
         }
-    }
-}
-
-@Composable
-fun NotificationSwitch(isEnabled: Boolean, type: String, onToggle: (Boolean) -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .border(1.dp, Color.LightGray.copy(0.5f), RoundedCornerShape(8.dp))
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Column {
-            Text("Notify me before ${type.lowercase()}", fontWeight = FontWeight.Medium)
-            Text("Get reminders", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
-        }
-        Switch(
-            checked = isEnabled,
-            onCheckedChange = onToggle,
-            colors = SwitchDefaults.colors(checkedTrackColor = Color(0xFF2196F3))
-        )
     }
 }
 

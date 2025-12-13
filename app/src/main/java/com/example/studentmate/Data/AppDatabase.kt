@@ -75,8 +75,7 @@ abstract class AppDatabase : RoomDatabase() {
                     name = "John Doe",
                     email = "john.doe@example.com",
                     password = "password",
-                    notificationsEnabled = true
-                )
+                    )
 
                 // CRITICAL: Capture the generated ID
                 val studentId = db.studentDao().insert(student1)

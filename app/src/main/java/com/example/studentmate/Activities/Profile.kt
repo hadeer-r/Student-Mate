@@ -75,7 +75,6 @@ class Profile : ComponentActivity() {
                 password = bundle.getString("password")!!,
                 name = bundle.getString("name")!!,
                 email = bundle.getString("email")!!,
-                notificationsEnabled = bundle.getBoolean("notificationsEnabled"),
 
                 )
         }
@@ -177,40 +176,6 @@ fun ProfileScreen(db: AppDatabase, student: Student?) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Notifications, contentDescription = null, tint = Color(0xFF2196F3))
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Notifications", fontWeight = FontWeight.Bold)
-                }
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Text("Enable exam reminders", fontSize = 14.sp)
-                        Text("Get notified about upcoming exams", fontSize = 12.sp, color = Color.Gray)
-                    }
-                    Switch(
-                        checked = student?.notificationsEnabled ?: false,
-                        onCheckedChange = { student?.notificationsEnabled = it },
-                        colors = SwitchDefaults.colors(checkedThumbColor = Color(0xFF2196F3))
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // --- 5. Logout Button (Red) ---
         Button(
             onClick = { logOut(context) },
             modifier = Modifier.fillMaxWidth().height(50.dp),

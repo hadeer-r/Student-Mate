@@ -71,8 +71,6 @@ fun StudentMateLoginScreen(db: AppDatabase) {
     val context = LocalContext.current
     var navController = rememberNavController()
 
-
-    // Root container (Box allows us to overlap the Help icon at the bottom)
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -250,7 +248,6 @@ fun goToHome(context: Context, student: Student) {
         putString("name", student.name)
         putString("email", student.email)
         putString("password", student.password)
-        putBoolean("notificationsEnabled",student.notificationsEnabled)
     }
 
     val intent = Intent(context, HomeActivity::class.java);

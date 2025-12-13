@@ -51,7 +51,6 @@ class HomeActivity : ComponentActivity() {
                 password = bundle.getString("password")!!,
                 name = bundle.getString("name")!!,
                 email = bundle.getString("email")!!,
-                notificationsEnabled = bundle.getBoolean("notificationsEnabled"),
 
             )
         }
@@ -76,7 +75,7 @@ fun HomeScreen(db: AppDatabase, student: Student?) {
         containerColor = Color(0xFFF9FAFB),
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /* Handle Add */ },
+                onClick = { goToAddAsssessment(context, student!!) },
                 containerColor = Color(0xFF2196F3),
                 contentColor = Color.White,
                 shape = CircleShape
@@ -146,7 +145,6 @@ fun Header(
             )
         }
 
-        // 2. Add the click listener to the Surface
         Surface(
             shape = CircleShape,
             color = Color(0xFF2196F3),
@@ -298,9 +296,20 @@ fun goToProfile(context: Context, student: Student){
         putString("name", student.name)
         putString("email", student.email)
         putString("password", student.password)
-        putBoolean("notificationsEnabled", student.notificationsEnabled)
     }
     val intent = Intent(context, Profile::class.java);
+    intent.putExtras(bundle)
+    context.startActivity((intent))
+}
+
+fun goToAddAsssessment(context: Context, student: Student){
+    val bundle = Bundle().apply {
+        putString("name", student.name)
+        putString("email", student.email)
+        putString("password", student.password)
+        putInt("id", student.id)
+    }
+    val intent = Intent(context, AddAssignment::class.java);
     intent.putExtras(bundle)
     context.startActivity((intent))
 }

@@ -285,9 +285,8 @@ fun LabeledTextFieldClickable(
 }
 fun RegisterF(context: Context,scope: CoroutineScope,name: String,email: String,password: String,db: AppDatabase) {
     scope.launch {
-        db.studentDao().insert(Student(name=name,email=email,password=password, notificationsEnabled = false))
+        db.studentDao().insert(Student(name=name,email=email,password=password))
         Log.d("studentT","true")
-
         Log.d("student",db.studentDao().GetAll().toString())
         goToLogin(context)
     }
