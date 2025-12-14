@@ -106,7 +106,6 @@ fun HomeScreen(db: AppDatabase, student: Student?) {
                     backgroundColor = Color(0xFF8E24AA),
                     onClick = {
                         // Navigate to My Subjects Activity
-                        // CHANGE THIS LINE:
                         val intent = Intent(context, MySubjectsActivity::class.java)
                         val bundle = Bundle().apply {
                             putString("name", student?.name)
@@ -173,7 +172,7 @@ fun Header(
             color = Color(0xFF2196F3),
             modifier = Modifier
                 .size(40.dp)
-                .clickable { goToProfile(context, student!!) } // <--- CLICK HAPPENS HERE
+                .clickable { goToProfile(context, student!!) }
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(

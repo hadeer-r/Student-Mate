@@ -46,6 +46,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.isSelected
 import androidx.compose.ui.text.font.FontWeight
@@ -55,6 +56,7 @@ import androidx.compose.ui.unit.sp
 import com.example.studentmate.Data.AppDatabase
 import com.example.studentmate.Data.Models.Student
 import com.example.studentmate.Data.Models.Subject
+import io.flutter.embedding.android.FlutterActivity
 
 
 class SelectSubjectsActivity : ComponentActivity() {
@@ -87,12 +89,12 @@ data class SelectableSubject(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SelectSubjectsScreen(db: AppDatabase, student: Student) {
-    // 1. Use the wrapper class (SelectableSubject) instead of just Subject
     var subjectsList by remember { mutableStateOf<List<SelectableSubject>>(emptyList()) }
+    var context = LocalContext.current
+
 
     LaunchedEffect(key1 = true) {
         val dbSubjects = db.subjectDao().getAll()
-        // Map database subjects to SelectableSubjects (default isSelected = false)
         subjectsList = dbSubjects.map { SelectableSubject(subject = it, isSelected = false) }
     }
 
@@ -118,9 +120,24 @@ fun SelectSubjectsScreen(db: AppDatabase, student: Student) {
         bottomBar = {
             Button(
                 onClick = {
-                    // Filter to get only the selected subjects
                     val finalSelection = subjectsList.filter { it.isSelected }.map { it.subject }
-                    /* Navigate to next screen passing finalSelection */
+
+                    // conver to json array to send in the rout
+                    val jsonArray = org.json.JSONArray()
+                    for (subj in finalSelection) {
+                        val jsonObject = org.json.JSONObject()
+                        jsonObject.put("name", subj.name)
+                        jsonObject.put("credits", subj.credits)
+                        jsonArray.put(jsonObject)
+                    }
+                    val jsonString = android.net.Uri.encode(jsonArray.toString())
+
+                    context.startActivity(
+                        FlutterActivity
+                            .withNewEngine()
+                            .initialRoute("/gpa_calculator?subjects=$jsonString")
+                            .build(context)
+                    )
                 },
                 modifier = Modifier
                     .fillMaxWidth()

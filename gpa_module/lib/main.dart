@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gpa_module/models/subject_model.dart';
 import 'package:gpa_module/views/gpa_calculator_view.dart';
+import 'dart:convert';
 
 // 1. We start the app normally
 void main() => runApp(const GPACalaulator());
@@ -12,35 +13,47 @@ class GPACalaulator extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      initialRoute: '/',
       
-      initialRoute: '/', 
-      routes: {
-        '/': (context) => _buildGPAView(),        
-        '/gpa_calculator': (context) => _buildGPAView(),
+      onGenerateRoute: (settings) {
+          if (settings.name != null && settings.name!.startsWith('/gpa_calculator')) {
+          
+          var uri = Uri.parse(settings.name!);
+          
+          var subjectsJson = uri.queryParameters['subjects'];
+          
+          List<SubjectModel> finalSubjects = [];
+          if (subjectsJson != null) {
+            List<dynamic> decodedList = jsonDecode(subjectsJson);
+            finalSubjects = decodedList.map((item) {
+              return SubjectModel(
+                subjectName: item['name'], 
+                creditHours: item['credits'], 
+                selectedGrade: "A+ (4.0)", // default value
+                gradeValue: 4.0,// default value
+              );
+            }).toList();
+          }
+
+          return MaterialPageRoute(
+            builder: (context) => GPACalculatorView(subjects: finalSubjects),
+          );
+        }
+
+        return MaterialPageRoute(builder: (context) => _buildDummyGPAView());
       },
     );
   }
 
-  Widget _buildGPAView() {
+  // for testing
+  Widget _buildDummyGPAView() {
     return GPACalculatorView(
       subjects: [
         SubjectModel(
-          subjectName: "Data Structures",
+          subjectName: "Test Subject",
           creditHours: 3,
-          selectedGrade: "B (3.0)",
-          gradeValue: 3.0,
-        ),
-        SubjectModel(
-          subjectName: "Web Development",
-          creditHours: 2,
-          selectedGrade: "A (3.7)",
-          gradeValue: 3.7,
-        ),
-        SubjectModel(
-          subjectName: "Database Systems",
-          creditHours: 3,
-          selectedGrade: "B+ (3.3)",
-          gradeValue: 3.3,
+          selectedGrade: "A+ (4.0)",
+          gradeValue: 4.0,
         ),
       ],
     );

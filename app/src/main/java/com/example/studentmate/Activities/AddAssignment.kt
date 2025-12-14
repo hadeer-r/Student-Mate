@@ -131,7 +131,6 @@ fun AddItemScreen(db: AppDatabase, loggedUser: Student?) {
                 .padding(16.dp)
                 .verticalScroll(scrollState)
         ) {
-            // 1. Title Input (Using Reusable Function)
             Text("Title", fontSize = 14.sp, color = Color.Gray)
             Spacer(modifier = Modifier.height(8.dp))
             StudentMateInput(
@@ -142,7 +141,6 @@ fun AddItemScreen(db: AppDatabase, loggedUser: Student?) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 2. Type Selector
             Text("Type", fontSize = 14.sp, color = Color.Gray)
             Spacer(modifier = Modifier.height(8.dp))
             Row(
@@ -164,7 +162,6 @@ fun AddItemScreen(db: AppDatabase, loggedUser: Student?) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 3. Subject Dropdown
             Text("Subject Name", fontSize = 14.sp, color = Color.Gray)
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -207,7 +204,6 @@ fun AddItemScreen(db: AppDatabase, loggedUser: Student?) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 4. Date Input
             Text("Date", fontSize = 14.sp, color = Color.Gray)
             Spacer(modifier = Modifier.height(8.dp))
             Box(modifier = Modifier.fillMaxWidth()) {
@@ -222,7 +218,6 @@ fun AddItemScreen(db: AppDatabase, loggedUser: Student?) {
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp)
                 )
-                // Invisible box to handle click over the text field
                 Box(
                     modifier = Modifier
                         .matchParentSize()
@@ -232,7 +227,6 @@ fun AddItemScreen(db: AppDatabase, loggedUser: Student?) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 5. Score Input (Using Reusable Function)
             Text("Assessment Score", fontSize = 14.sp, color = Color.Gray)
             Spacer(modifier = Modifier.height(8.dp))
             StudentMateInput(
@@ -243,7 +237,6 @@ fun AddItemScreen(db: AppDatabase, loggedUser: Student?) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 6. Actual Score Input (Using Reusable Function)
             Text("Your Score (optional)", fontSize = 14.sp, color = Color.Gray)
             Spacer(modifier = Modifier.height(8.dp))
             StudentMateInput(
@@ -254,7 +247,6 @@ fun AddItemScreen(db: AppDatabase, loggedUser: Student?) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 7. Description Input (Using Reusable Function with custom height)
             Text("Description", fontSize = 14.sp, color = Color.Gray)
             Spacer(modifier = Modifier.height(8.dp))
             StudentMateInput(

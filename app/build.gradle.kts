@@ -5,8 +5,6 @@ plugins {
     alias(libs.plugins.kotlin.kapt)
 }
 
-// REMOVED: allprojects { ... } (This belongs in the ROOT build file, not here)
-
 android {
     namespace = "com.example.studentmate"
     compileSdk = 36
@@ -24,13 +22,16 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
+        debug {
+            isMinifyEnabled = false
+        }
+
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -43,6 +44,14 @@ android {
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.3"
+    }
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+            isUniversalApk = false
+        }
     }
 }
 
