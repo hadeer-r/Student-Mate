@@ -181,7 +181,10 @@ fun AddItemScreen(db: AppDatabase, loggedUser: Student?) {
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedSubject) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .menuAnchor(),
+                        .menuAnchor(
+                            type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
+                            enabled = true
+                        ),
                     shape = RoundedCornerShape(8.dp)
                 )
 

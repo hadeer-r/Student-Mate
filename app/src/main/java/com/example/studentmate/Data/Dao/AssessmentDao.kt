@@ -28,7 +28,7 @@ interface AssessmentDao {
     suspend fun getAssessmentsForSubject(subjectId: Int): List<Assessment>
 
     @Query("SELECT * FROM assessments WHERE subjectId=:subjectId AND studentId=:studentId")
-    suspend fun GetAssessmentByStudentIdAndSubjectId(subjectId: Int, studentId: Int): Assessment
+    suspend fun GetAssessmentByStudentIdAndSubjectId(subjectId: Int, studentId: Int): List<Assessment>
 
     @Update
     suspend fun updateAssessment(assessment: Assessment)

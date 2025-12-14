@@ -38,6 +38,7 @@ import com.example.studentmate.Data.AppDatabase
 import com.example.studentmate.ui.theme.StudentMateTheme
 import com.example.studentmate.Data.Models.Assessment
 import com.example.studentmate.Data.Models.Student
+import com.example.studentmate.SelectSubjectsActivity
 import java.util.Calendar
 
 class HomeActivity : ComponentActivity() {
@@ -107,6 +108,14 @@ fun HomeScreen(db: AppDatabase, student: Student?) {
                         // Navigate to My Subjects Activity
                         // CHANGE THIS LINE:
                         val intent = Intent(context, MySubjectsActivity::class.java)
+                        val bundle = Bundle().apply {
+                            putString("name", student?.name)
+                            putString("email", student?.email)
+                            putString("password", student?.password)
+                            putInt("id", student?.id ?: 1)
+
+                        }
+                        intent.putExtras(bundle)
                         context.startActivity(intent)
                     }
                 )
@@ -117,7 +126,8 @@ fun HomeScreen(db: AppDatabase, student: Student?) {
                     icon = Icons.Default.Check,
                     backgroundColor = Color(0xFF1E88E5),
                     onClick = {
-                        // Add your GPA calculation navigation here
+                        if(student != null)
+                        goToSlectSubject(context, student)
                     }
                 )
                 Spacer(modifier = Modifier.height(24.dp))
@@ -315,6 +325,18 @@ fun goToAddAsssessment(context: Context, student: Student){
         putInt("id", student.id)
     }
     val intent = Intent(context, AddAssignment::class.java);
+    intent.putExtras(bundle)
+    context.startActivity((intent))
+}
+
+fun goToSlectSubject(context: Context, student: Student){
+    val bundle = Bundle().apply {
+        putString("name", student.name)
+        putString("email", student.email)
+        putString("password", student.password)
+        putInt("id", student.id)
+    }
+    val intent = Intent(context, SelectSubjectsActivity::class.java);
     intent.putExtras(bundle)
     context.startActivity((intent))
 }

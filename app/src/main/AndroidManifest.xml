@@ -12,6 +12,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.StudentMate">
         <activity
+            android:name="io.flutter.embedding.android.FlutterActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".Activities.AddAssignment"
             android:exported="false"
             android:label="@string/title_activity_add_assignment"

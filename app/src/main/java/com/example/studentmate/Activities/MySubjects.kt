@@ -1,10 +1,13 @@
 package com.example.studentmate.Activities
 
+import android.content.Context
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,8 +21,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
+//import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DateRange
@@ -32,61 +36,75 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.toColorInt
+import com.example.studentmate.Data.AppDatabase
+import com.example.studentmate.Data.Models.Assessment
+import com.example.studentmate.Data.Models.Student
+import com.example.studentmate.Data.Models.Subject
 import com.example.studentmate.ui.theme.StudentMateTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import java.lang.Long
 
 class MySubjectsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        var db = AppDatabase.getDatabase(this)
+        var bundle = intent.extras
+        var student: Student? = null
+        if(bundle != null){
+            student = Student(
+                password = bundle.getString("password")!!,
+                name = bundle.getString("name")!!,
+                email = bundle.getString("email")!!,
+                id = bundle.getInt("id")
+
+            )
+        }
         setContent {
             StudentMateTheme {
                 MySubjectsScreen(
-                    onNavigateBack = { finish() }
+                    db,
+                    onNavigateBack = { finish() },
+                    student = student!!
                 )
             }
         }
     }
 }
 
-data class Subject(
-    val name: String,
-    val credits: Int,
-    val total: Int = 0,
-    val exams: Int = 0,
-    val tasks: Int = 0,
-    val color: Color
-)
 
-data class AssessmentItem(
-    val type: String,
-    val date: String,
-    val description: String,
-    val color: Color
-)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MySubjectsScreen(
+    db: AppDatabase,
+    student: Student,
     onNavigateBack: () -> Unit = {},
     onEditSubject: (Subject) -> Unit = {}
 ) {
+    var scope = rememberCoroutineScope()
+    var context = LocalContext.current
+
     // 1. Subject List Data
-    val subjects = remember {
-        mutableStateListOf(
-            Subject("Database Systems", 3, 1, 1, 0, Color(0xFFFF9800)),
-            Subject("Data Structures", 4, 1, 1, 0, Color(0xFF2196F3)),
-            Subject("Web Development", 3, 1, 0, 1, Color(0xFF9C27B0))
-        )
+    var allsubjects by remember { mutableStateOf<List<Subject>>(emptyList()) }
+
+    LaunchedEffect(Unit) {
+        allsubjects = db.subjectDao().getAll()
     }
 
     // 2. Navigation States
     var showAddSubjectScreen by remember { mutableStateOf(false) }
-    var selectedSubject by remember { mutableStateOf<Subject?>(null) } // Viewing Details
-    var subjectToEdit by remember { mutableStateOf<Subject?>(null) }   // Editing
+    var selectedSubject by remember { mutableStateOf<Subject?>(null) }
+    var subjectToEdit by remember { mutableStateOf<Subject?>(null) }
 
     // 3. Back Handler Logic
     BackHandler(enabled = showAddSubjectScreen || selectedSubject != null || subjectToEdit != null) {
@@ -102,7 +120,11 @@ fun MySubjectsScreen(
             subjectToEdit = null, // Null means Create Mode
             onBack = { showAddSubjectScreen = false },
             onSave = { newSubject ->
-                subjects.add(newSubject)
+                scope.launch {
+                    db.subjectDao().insert(newSubject)
+                    Toast.makeText(context, "Added Successfully", Toast.LENGTH_SHORT).show()
+                    allsubjects = db.subjectDao().getAll()
+                }
                 showAddSubjectScreen = false
             }
         )
@@ -112,23 +134,32 @@ fun MySubjectsScreen(
             subjectToEdit = subjectToEdit,
             onBack = { subjectToEdit = null },
             onSave = { updatedSubject ->
-                // Find and replace
-                val index = subjects.indexOf(subjectToEdit)
-                if (index != -1) {
-                    subjects[index] = updatedSubject
+                val finalSubject = updatedSubject.copy(id = subjectToEdit!!.id)
+
+                scope.launch {
+                    db.subjectDao().update(finalSubject)
+                    Toast.makeText(context, "Updated Successfully", Toast.LENGTH_SHORT).show()
+                    allsubjects = db.subjectDao().getAll()
                 }
                 subjectToEdit = null
             },
             onDelete = {
-                subjects.remove(subjectToEdit)
-                subjectToEdit = null
+                scope.launch {
+                    db.subjectDao().delete(subjectToEdit!!)
+                    Toast.makeText(context, "Deleted Successfully", Toast.LENGTH_SHORT).show()
+                    allsubjects = db.subjectDao().getAll()
+                    subjectToEdit = null
+
+                }
             }
         )
     } else if (selectedSubject != null) {
         // --- DETAILS MODE ---
         SubjectDetailsScreen(
             subject = selectedSubject!!,
-            onBack = { selectedSubject = null }
+            onBack = { selectedSubject = null },
+            db = db,
+            student = student
         )
     } else {
         // --- LIST MODE ---
@@ -144,7 +175,7 @@ fun MySubjectsScreen(
                                 color = Color.Black // Main text black
                             )
                             Text(
-                                text = "${subjects.size} subjects",
+                                text = "${allsubjects.size} subjects",
                                 fontSize = 14.sp,
                                 color = Color.Gray // Subtitle gray
                             )
@@ -152,7 +183,7 @@ fun MySubjectsScreen(
                     },
                     navigationIcon = {
                         IconButton(onClick = onNavigateBack) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.Black)
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.Black)
                         }
                     },
                     actions = {
@@ -176,11 +207,13 @@ fun MySubjectsScreen(
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                items(subjects) { subject ->
+                items(allsubjects) { subject ->
                     SubjectCard(
                         subject = subject,
                         onViewDetails = { selectedSubject = subject },
-                        onEdit = { subjectToEdit = subject } // Trigger Edit Mode
+                        onEdit = { subjectToEdit = subject } ,
+                        db = db,
+                        student = student
                     )
                 }
             }
@@ -188,7 +221,7 @@ fun MySubjectsScreen(
     }
 }
 
-// --- REFACTORED: ADD OR EDIT SUBJECT SCREEN ---
+// --- ADD OR EDIT SUBJECT SCREEN ---
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddOrEditSubjectScreen(
@@ -200,7 +233,7 @@ fun AddOrEditSubjectScreen(
     // Initialize state with existing data if editing, or defaults if creating
     var subjectName by remember { mutableStateOf(subjectToEdit?.name ?: "") }
     var creditHours by remember { mutableStateOf(subjectToEdit?.credits?.toString() ?: "3") }
-    var selectedColor by remember { mutableStateOf(subjectToEdit?.color ?: Color(0xFF2196F3)) }
+    var selectedColor by remember { mutableStateOf(Color(Long.decode(subjectToEdit?.color ?: "0xFF2196F3"))) }
 
     val isEditMode = subjectToEdit != null
     val screenTitle = if (isEditMode) "Edit Subject" else "Create Subject"
@@ -219,7 +252,7 @@ fun AddOrEditSubjectScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.Black)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.Black)
                     }
                 },
                 actions = {
@@ -259,7 +292,7 @@ fun AddOrEditSubjectScreen(
                 shape = RoundedCornerShape(12.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                border = androidx.compose.foundation.BorderStroke(1.dp, Color.LightGray)
+                border = BorderStroke(1.dp, Color.LightGray)
             ) {
                 Row(
                     modifier = Modifier.padding(16.dp),
@@ -378,10 +411,10 @@ fun AddOrEditSubjectScreen(
                             Subject(
                                 name = subjectName,
                                 credits = creditHours.toIntOrNull() ?: 0,
-                                total = subjectToEdit?.total ?: 0,
-                                exams = subjectToEdit?.exams ?: 0,
-                                tasks = subjectToEdit?.tasks ?: 0,
-                                color = selectedColor
+//                                total = subjectToEdit?.total ?: 0,
+//                                exams = subjectToEdit?.exams ?: 0,
+//                                tasks = subjectToEdit?.tasks ?: 0,
+                                color = selectedColor.toArgb().toString()
                             )
                         )
                     }
@@ -403,11 +436,16 @@ fun AddOrEditSubjectScreen(
 @Composable
 fun SubjectDetailsScreen(
     subject: Subject,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    db: AppDatabase,
+    student: Student
 ) {
-    val assessments = listOf(
-        AssessmentItem("Exam", "Dec 10, 2025", "Midterm exam on SQL queries", Color(0xFFF44336))
-    )
+    var context = LocalContext.current
+    var assessmentsforTheSubject by remember { mutableStateOf<List<Assessment>>(emptyList()) }
+    LaunchedEffect(key1 = true) {
+        assessmentsforTheSubject = db.assessmentDao().GetAssessmentByStudentIdAndSubjectId(subjectId = subject.id, studentId = student.id)
+    }
+
 
     Scaffold(
         topBar = {
@@ -420,7 +458,7 @@ fun SubjectDetailsScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.Black)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.Black)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
@@ -446,7 +484,7 @@ fun SubjectDetailsScreen(
                     Box(
                         modifier = Modifier
                             .size(48.dp)
-                            .background(subject.color, RoundedCornerShape(12.dp)),
+                            .background(Color(Long.decode(subject.color)), RoundedCornerShape(12.dp)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(Icons.Default.Book, contentDescription = null, tint = Color.White, modifier = Modifier.size(24.dp))
@@ -454,7 +492,7 @@ fun SubjectDetailsScreen(
                     Spacer(modifier = Modifier.width(16.dp))
                     Column {
                         Text(subject.name, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.Black)
-                        Text("${subject.total} item total", fontSize = 14.sp, color = Color.Gray)
+                        Text("${assessmentsforTheSubject.size} item total", fontSize = 14.sp, color = Color.Gray)
                     }
                 }
             }
@@ -463,9 +501,8 @@ fun SubjectDetailsScreen(
 
             // 2. Stats Row
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                StatBox(subject.exams, "Exams", Color(0xFFE57373), Color(0xFFFFEBEE), Modifier.weight(1f))
-                StatBox(subject.tasks, "Assignments", Color(0xFF64B5F6), Color(0xFFE3F2FD), Modifier.weight(1f))
-                StatBox(0, "Completed", Color(0xFF81C784), Color(0xFFE8F5E9), Modifier.weight(1f))
+                StatBox(assessmentsforTheSubject.filter { it.isExam }.size, "Exams", Color(0xFFE57373), Color(0xFFFFEBEE), Modifier.weight(1f))
+                StatBox(assessmentsforTheSubject.filter { !it.isExam }.size, "Assignments", Color(0xFF64B5F6), Color(0xFFE3F2FD), Modifier.weight(1f))
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -478,11 +515,11 @@ fun SubjectDetailsScreen(
             ) {
                 Text("Exams & Assignments", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.Black)
                 Button(
-                    onClick = { /* Add Logic */ },
+                    onClick = { goToAddAsssessment(context, student)},
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2196F3)),
                     contentPadding = PaddingValues(horizontal = 12.dp),
                     modifier = Modifier.height(32.dp),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp),
                 ) {
                     Icon(Icons.Default.Add, null, modifier = Modifier.size(16.dp), tint = Color.White)
                     Spacer(modifier = Modifier.width(4.dp))
@@ -492,7 +529,7 @@ fun SubjectDetailsScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
             LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(assessments) { item -> AssessmentItemCard(item) }
+                items(assessmentsforTheSubject) { item -> AssessmentItemCard(item, Color(0xFF2196F3)) }
             }
         }
     }
@@ -518,7 +555,11 @@ fun ColorOption(color: Color, isSelected: Boolean, onClick: () -> Unit) {
 }
 
 @Composable
-fun SubjectCard(subject: Subject, onViewDetails: () -> Unit, onEdit: () -> Unit) {
+fun SubjectCard(subject: Subject, onViewDetails: () -> Unit, onEdit: () -> Unit, db: AppDatabase, student: Student) {
+    var assessmentsforTheSubject by remember { mutableStateOf<List<Assessment>>(emptyList()) }
+    LaunchedEffect(key1 = true) {
+        assessmentsforTheSubject = db.assessmentDao().GetAssessmentByStudentIdAndSubjectId(subjectId = subject.id, studentId = student.id)
+    }
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
@@ -527,7 +568,7 @@ fun SubjectCard(subject: Subject, onViewDetails: () -> Unit, onEdit: () -> Unit)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(modifier = Modifier.size(48.dp).background(subject.color, CircleShape), contentAlignment = Alignment.Center) {
+                Box(modifier = Modifier.size(48.dp).background(Color(Long.decode(subject.color)), CircleShape), contentAlignment = Alignment.Center) {
                     Icon(Icons.Default.Book, null, tint = Color.White, modifier = Modifier.size(24.dp))
                 }
                 Spacer(modifier = Modifier.width(12.dp))
@@ -538,9 +579,9 @@ fun SubjectCard(subject: Subject, onViewDetails: () -> Unit, onEdit: () -> Unit)
             }
             Spacer(modifier = Modifier.height(20.dp))
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                StatisticItem(subject.total.toString(), "Total", Color(0xFF2196F3))
-                StatisticItem(subject.exams.toString(), "Exams", Color(0xFFF44336))
-                StatisticItem(subject.tasks.toString(), "Tasks", Color(0xFF4CAF50))
+                StatisticItem(assessmentsforTheSubject.size.toString(), "Total", Color(0xFF2196F3))
+                StatisticItem(assessmentsforTheSubject.filter {it.isExam}.size.toString(), "Exams", Color(0xFFF44336))
+                StatisticItem(assessmentsforTheSubject.filter {!it.isExam}.size.toString(), "Tasks", Color(0xFF4CAF50))
             }
             Spacer(modifier = Modifier.height(16.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -583,7 +624,7 @@ fun StatBox(count: Int, label: String, textColor: Color, backgroundColor: Color,
 }
 
 @Composable
-fun AssessmentItemCard(item: AssessmentItem) {
+fun AssessmentItemCard(item: Assessment, color: Color) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
@@ -592,17 +633,39 @@ fun AssessmentItemCard(item: AssessmentItem) {
         border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFF5F5F5))
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Surface(color = item.color, shape = RoundedCornerShape(12.dp)) {
-                Text(item.type, color = Color.White, fontSize = 12.sp, modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Surface(color = color, shape = RoundedCornerShape(12.dp)) {
+                    val type = if(item.isExam) "Exam" else "Assignment"
+                    Text(
+                        text = type,
+                        color = Color.White,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = item.title,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
             }
             Spacer(modifier = Modifier.height(8.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Default.DateRange, null, tint = Color.Gray, modifier = Modifier.size(16.dp))
                 Spacer(modifier = Modifier.width(6.dp))
-                Text(item.date, fontSize = 13.sp, color = Color.Gray, fontWeight = FontWeight.Medium)
+                Text(item.deadline.toString(), fontSize = 13.sp, color = Color.Gray, fontWeight = FontWeight.Medium)
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(item.description, fontSize = 14.sp, color = Color.Gray)
         }
+        Spacer(modifier = Modifier.height(8.dp))
+
     }
 }
+

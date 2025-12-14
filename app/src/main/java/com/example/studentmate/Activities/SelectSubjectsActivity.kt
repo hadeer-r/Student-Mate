@@ -21,7 +21,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+//import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -36,48 +37,67 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.test.isSelected
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.studentmate.Data.AppDatabase
+import com.example.studentmate.Data.Models.Student
+import com.example.studentmate.Data.Models.Subject
 
-//   (Data Model)
-data class Subject(
-    val id: Int,
-    val name: String,
-    val type: String,
-    var isSelected: Boolean = false
-)
 
 class SelectSubjectsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        var db = AppDatabase.getDatabase(this)
+        var bundle = intent.extras
+        var student: Student? = null
+        if(bundle != null){
+            student = Student(
+                password = bundle.getString("password")!!,
+                name = bundle.getString("name")!!,
+                email = bundle.getString("email")!!,
+                id = bundle.getInt("id")
+
+            )
+        }
         setContent {
-            SelectSubjectsScreen()
+            if(student != null)
+            SelectSubjectsScreen(db, student)
         }
     }
 }
+// Helper class to handle selection state
+data class SelectableSubject(
+    val subject: Subject,
+    val isSelected: Boolean = false
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SelectSubjectsScreen() {
-    //    (State)
-    val subjects = remember {
-        mutableStateListOf(
-            Subject(1, "Data Structures", "Exam"),
-            Subject(2, "Web Development", "Assignment"),
-            Subject(3, "Database Systems", "Exam"),
-            Subject(4, "Mobile Computing", "Assignment"),
+fun SelectSubjectsScreen(db: AppDatabase, student: Student) {
+    // 1. Use the wrapper class (SelectableSubject) instead of just Subject
+    var subjectsList by remember { mutableStateOf<List<SelectableSubject>>(emptyList()) }
 
-            )
+    LaunchedEffect(key1 = true) {
+        val dbSubjects = db.subjectDao().getAll()
+        // Map database subjects to SelectableSubjects (default isSelected = false)
+        subjectsList = dbSubjects.map { SelectableSubject(subject = it, isSelected = false) }
     }
 
-    val selectedCount = subjects.count { it.isSelected }
+    // Count currently selected items
+    val selectedCount = subjectsList.count { it.isSelected }
 
     Scaffold(
         topBar = {
@@ -90,14 +110,18 @@ fun SelectSubjectsScreen() {
                 },
                 navigationIcon = {
                     IconButton(onClick = { /* Handle Back */ }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
         },
         bottomBar = {
             Button(
-                onClick = { /* move to gpacalc screen later */ },
+                onClick = {
+                    // Filter to get only the selected subjects
+                    val finalSelection = subjectsList.filter { it.isSelected }.map { it.subject }
+                    /* Navigate to next screen passing finalSelection */
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
@@ -125,18 +149,20 @@ fun SelectSubjectsScreen() {
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
-
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(subjects) { subject ->
+                items(subjectsList) { item ->
                     SubjectItem(
-                        subject = subject,
+                        item = item, // Pass the wrapper object
                         onClick = {
-                            //  reflect the choice
-                            val index = subjects.indexOf(subject)
-                            if (index != -1) {
-                                subjects[index] = subjects[index].copy(isSelected = !subject.isSelected)
+                            // Update the list with the new selection state
+                            subjectsList = subjectsList.map { currentItem ->
+                                if (currentItem.subject.id == item.subject.id) {
+                                    currentItem.copy(isSelected = !currentItem.isSelected)
+                                } else {
+                                    currentItem
+                                }
                             }
                         }
                     )
@@ -161,14 +187,16 @@ fun SelectSubjectsScreen() {
         }
     }
 }
-
 @Composable
 fun SubjectItem(
-    subject: Subject,
+    item: SelectableSubject, // Changed from Subject to SelectableSubject
     onClick: () -> Unit
 ) {
-    val borderColor = if (subject.isSelected) Color(0xFF2196F3) else Color.LightGray
-    val backgroundColor = if (subject.isSelected) Color(0xFFE3F2FD) else Color.White
+    val subject = item.subject
+    val isSelected = item.isSelected
+
+    val borderColor = if (isSelected) Color(0xFF2196F3) else Color.LightGray
+    val backgroundColor = if (isSelected) Color(0xFFE3F2FD) else Color.White
 
     Card(
         modifier = Modifier
@@ -186,7 +214,7 @@ fun SubjectItem(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (subject.isSelected) {
+            if (isSelected) {
                 Icon(
                     imageVector = Icons.Default.CheckCircle,
                     contentDescription = "Selected",
@@ -210,8 +238,10 @@ fun SubjectItem(
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
                 )
+                // Ensure 'credits' exists on your Subject model.
+                // Using credits instead of 'type' which might not exist.
                 Text(
-                    text = subject.type,
+                    text = "${subject.credits} Credits",
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
                 )

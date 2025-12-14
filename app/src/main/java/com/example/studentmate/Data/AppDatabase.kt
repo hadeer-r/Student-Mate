@@ -19,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Date
 
+
 @Database(
     entities = [
         Assessment::class,
@@ -80,8 +81,12 @@ abstract class AppDatabase : RoomDatabase() {
                 // CRITICAL: Capture the generated ID
                 val studentId = db.studentDao().insert(student1)
 
-                val subject1 = Subject(name = "Mathematics")
-                val subject2 = Subject(name = "History")
+                val subject1 = Subject(name = "Mathematics",
+                    credits = 3,
+                    color = "#FF5733")
+                val subject2 = Subject(name = "History"
+                    , credits = 3,
+                    color = "#FF5733")
 
                 // CRITICAL: Capture generated IDs
                 val subject1Id = db.subjectDao().insert(subject1)

@@ -1,4 +1,3 @@
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -6,12 +5,12 @@ plugins {
     alias(libs.plugins.kotlin.kapt)
 }
 
+// REMOVED: allprojects { ... } (This belongs in the ROOT build file, not here)
+
 android {
     namespace = "com.example.studentmate"
     compileSdk = 36
-    buildFeatures {
-        compose = true
-    }
+
     defaultConfig {
         applicationId = "com.example.studentmate"
         minSdk = 24
@@ -42,7 +41,6 @@ android {
     buildFeatures {
         compose = true
     }
-
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.3"
     }
@@ -65,6 +63,9 @@ dependencies {
     implementation(libs.androidx.foundation)
     implementation(libs.androidx.material3)
     implementation(libs.core.ktx)
+    implementation(libs.androidx.ui.test)
+
+    // REMOVED: implementation(libs.androidx.room.runtime.jvm) <--- THIS WAS CAUSING THE DUPLICATE ERROR
 
     // Testing libraries
     testImplementation(libs.junit)
@@ -77,7 +78,7 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
-    // Room
+    // Room (Use these consistent versions)
     implementation("androidx.room:room-runtime:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
@@ -95,8 +96,11 @@ dependencies {
 
     // for testing
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation("androidx.room:room-testing:2.6.1")
     androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     testImplementation("org.robolectric:robolectric:4.11.1")
+
+    // for flutter
+    implementation(project(":flutter"))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
 }

@@ -6,5 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "subjects")
 data class Subject(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val name: String
+    val name: String,
+    val credits: Int,
+    val color: String,
 )
