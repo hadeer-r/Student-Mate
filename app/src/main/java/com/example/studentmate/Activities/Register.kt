@@ -287,7 +287,6 @@ fun RegisterF(context: Context,scope: CoroutineScope,name: String,email: String,
     scope.launch {
         db.studentDao().insert(Student(name=name,email=email,password=password))
         Log.d("studentT","true")
-
         Log.d("student",db.studentDao().GetAll().toString())
         goToLogin(context)
     }

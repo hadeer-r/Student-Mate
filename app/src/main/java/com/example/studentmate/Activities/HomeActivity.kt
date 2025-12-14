@@ -1,11 +1,12 @@
 package com.example.studentmate.Activities
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -19,10 +20,16 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -30,56 +37,46 @@ import androidx.compose.ui.unit.sp
 import com.example.studentmate.Data.AppDatabase
 import com.example.studentmate.ui.theme.StudentMateTheme
 import com.example.studentmate.Data.Models.Assessment
+import com.example.studentmate.Data.Models.Student
 import java.util.Calendar
-import java.util.Date
 
 class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val db = AppDatabase.getDatabase(this);
+        var bundle = intent.extras
+        var student: Student? = null
+        if(bundle != null){
+            student = Student(
+                password = bundle.getString("password")!!,
+                name = bundle.getString("name")!!,
+                email = bundle.getString("email")!!,
+                id = bundle.getInt("id")
+
+            )
+        }
         enableEdgeToEdge()
         setContent {
             StudentMateTheme {
-                HomeScreen();
+                HomeScreen(db,student);
             }
         }
+
     }
 }
 
 @Composable
-fun HomeScreen() {
-    val assessments = listOf(
-        Assessment(
-            1,
-            1,
-            1,
-            "Web development",
-            "Assignment",
-            Calendar.getInstance().apply { set(2025, Calendar.NOVEMBER, 30) }.time,
-            100,
-            false,
-    false,
-            actualScore = 100
-        ),
-        Assessment(
-            2,
-            2,
-            1,
-            "andriod exam",
-            "Assignment"
-            , Calendar.getInstance().apply { set(2025, Calendar.NOVEMBER, 30) }.time,
-            0,
-            true,
-            false,
-            actualScore = 150
-        )
-    )
-
+fun HomeScreen(db: AppDatabase, student: Student?) {
+    val context = LocalContext.current
+    var assessments by remember { mutableStateOf<List<Assessment>>(emptyList()) }
+    LaunchedEffect(key1 = true) {
+        assessments = db.assessmentDao().getAllAssessments()
+    }
     Scaffold(
         containerColor = Color(0xFFF9FAFB),
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /* Handle Add */ },
+                onClick = { goToAddAsssessment(context, student!!) },
                 containerColor = Color(0xFF2196F3),
                 contentColor = Color.White,
                 shape = CircleShape
@@ -95,9 +92,8 @@ fun HomeScreen() {
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // 1. Header Section
             item {
-                Header()
+                Header(student, context )
                 Spacer(modifier = Modifier.height(20.dp))
             }
 
@@ -127,15 +123,18 @@ fun HomeScreen() {
     }
 }
 @Composable
-fun Header(){
+fun Header(
+    student: Student?,
+    context : Context
+) {
     Row(
         modifier = Modifier.fillMaxSize(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
-    ){
+    ) {
         Column {
             Text(
-                text = "Hello, Sarah Johnson",
+                text = student?.name ?: "",
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
@@ -146,12 +145,15 @@ fun Header(){
                 color = Color.Gray
             )
         }
+
         Surface(
             shape = CircleShape,
             color = Color(0xFF2196F3),
-            modifier = Modifier.size(40.dp)
+            modifier = Modifier
+                .size(40.dp)
+                .clickable { goToProfile(context, student!!) } // <--- CLICK HAPPENS HERE
         ) {
-            Box(contentAlignment = Alignment.Center){
+            Box(contentAlignment = Alignment.Center) {
                 Icon(
                     imageVector = Icons.Default.Person,
                     contentDescription = "Profile",
@@ -287,5 +289,38 @@ fun AssessmentCard(item: Assessment){
 @Preview
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen()
+    HomeScreen(db = AppDatabase.getDatabase(LocalContext.current), student = null)
 }
+
+fun goToProfile(context: Context, student: Student){
+    val bundle = Bundle().apply {
+        putString("name", student.name)
+        putString("email", student.email)
+        putString("password", student.password)
+    }
+    val intent = Intent(context, Profile::class.java);
+    intent.putExtras(bundle)
+    context.startActivity((intent))
+}
+
+fun goToAddAsssessment(context: Context, student: Student){
+    val bundle = Bundle().apply {
+        putString("name", student.name)
+        putString("email", student.email)
+        putString("password", student.password)
+        putInt("id", student.id)
+    }
+    val intent = Intent(context, AddAssignment::class.java);
+    intent.putExtras(bundle)
+    context.startActivity((intent))
+}
+
+
+
+
+
+
+
+
+
+
