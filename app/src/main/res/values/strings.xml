@@ -8,4 +8,5 @@
     <string name="title_activity_profile">Profile</string>
     <string name="title_activity_home">Home</string>
     <string name="title_activity_add_assignment">AddAssignment</string>
+    <string name="title_activity_my_subjects">My_subjects</string>
 </resources>

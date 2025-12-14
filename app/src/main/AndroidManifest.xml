@@ -17,7 +17,7 @@
             android:label="@string/title_activity_add_assignment"
             android:theme="@style/Theme.StudentMate" />
         <activity
-            android:name=".Activities.AddAssessment"
+            android:name=".Activities.MySubjectsActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
@@ -55,6 +55,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".Activities.Register"
             android:exported="false"

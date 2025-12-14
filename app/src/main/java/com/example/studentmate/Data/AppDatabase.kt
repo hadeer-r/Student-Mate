@@ -28,6 +28,7 @@ import java.util.Date
     version = 1,
     exportSchema = false
 )
+
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun studentDao(): StudentDao
@@ -65,7 +66,6 @@ abstract class AppDatabase : RoomDatabase() {
             }
 
             suspend fun populateDatabase(db: AppDatabase) {
-                // --- PASTE YOUR INSERTION CODE HERE ---
                 val studentDao = db.studentDao()
                 val subjectDao = db.subjectDao()
                 val assessmentDao = db.assessmentDao()

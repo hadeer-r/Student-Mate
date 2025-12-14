@@ -9,7 +9,9 @@ plugins {
 android {
     namespace = "com.example.studentmate"
     compileSdk = 36
-
+    buildFeatures {
+        compose = true
+    }
     defaultConfig {
         applicationId = "com.example.studentmate"
         minSdk = 24
@@ -40,8 +42,7 @@ android {
     buildFeatures {
         compose = true
     }
-    // NOTE: If you are using Kotlin 2.0+ with the 'kotlin.compose' plugin,
-    // you likely do not need this block anymore.
+
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.3"
     }

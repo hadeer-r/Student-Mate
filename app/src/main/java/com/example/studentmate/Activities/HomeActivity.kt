@@ -102,16 +102,27 @@ fun HomeScreen(db: AppDatabase, student: Student?) {
                 DashboardButton(
                     text = "My Subjects",
                     icon = Icons.Default.Menu,
-                    backgroundColor = Color(0xFF8E24AA) // Purple
+                    backgroundColor = Color(0xFF8E24AA),
+                    onClick = {
+                        // Navigate to My Subjects Activity
+                        // CHANGE THIS LINE:
+                        val intent = Intent(context, MySubjectsActivity::class.java)
+                        context.startActivity(intent)
+                    }
                 )
+
                 Spacer(modifier = Modifier.height(12.dp))
                 DashboardButton(
                     text = "Calculate My GPA",
                     icon = Icons.Default.Check,
-                    backgroundColor = Color(0xFF1E88E5) // Blue
+                    backgroundColor = Color(0xFF1E88E5),
+                    onClick = {
+                        // Add your GPA calculation navigation here
+                    }
                 )
                 Spacer(modifier = Modifier.height(24.dp))
             }
+
             items(assessments) { item ->
                 AssessmentCard(item)
             }
@@ -122,13 +133,14 @@ fun HomeScreen(db: AppDatabase, student: Student?) {
         }
     }
 }
+
 @Composable
 fun Header(
     student: Student?,
     context : Context
 ) {
     Row(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -169,15 +181,16 @@ fun DashboardButton(
     text: String,
     icon: ImageVector,
     backgroundColor: Color,
-){
+    onClick: () -> Unit = {}
+) {
     Button(
-        onClick = { /* Handle button click */ },
+        onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
             .height(50.dp),
         colors = ButtonDefaults.buttonColors(containerColor = backgroundColor),
         shape = RoundedCornerShape(12.dp)
-    ){
+    ) {
         Icon(
             imageVector = icon,
             contentDescription = null,
@@ -189,16 +202,14 @@ fun DashboardButton(
 }
 
 @Composable
-fun AssessmentCard(item: Assessment){
-    var assessmentColor: Color
-    var assessmentType: String
+fun AssessmentCard(item: Assessment) {
+    val assessmentColor: Color
+    val assessmentType: String
 
-    if(item.isExam)
-    {
+    if (item.isExam) {
         assessmentColor = Color.Red
-        assessmentType="Exam"
-    }
-    else {
+        assessmentType = "Exam"
+    } else {
         assessmentColor = Color.Green
         assessmentType = "Assignment"
     }
@@ -208,7 +219,7 @@ fun AssessmentCard(item: Assessment){
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier.fillMaxWidth()
-    ){
+    ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
@@ -216,8 +227,7 @@ fun AssessmentCard(item: Assessment){
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Top
-
-            ){
+            ) {
                 Text(
                     text = item.title,
                     fontSize = 16.sp,
@@ -227,7 +237,6 @@ fun AssessmentCard(item: Assessment){
                 Surface(
                     color = assessmentColor,
                     shape = RoundedCornerShape(16.dp)
-
                 ) {
                     Text(
                         text = assessmentType,
@@ -239,10 +248,9 @@ fun AssessmentCard(item: Assessment){
             }
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Row 2
             Row(
                 verticalAlignment = Alignment.CenterVertically
-            ){
+            ) {
                 Icon(
                     imageVector = Icons.Default.DateRange,
                     contentDescription = null,
@@ -255,12 +263,9 @@ fun AssessmentCard(item: Assessment){
                     fontSize = 14.sp,
                     color = Color.Gray
                 )
-
-
             }
             Spacer(modifier = Modifier.height(8.dp))
 
-            // row 3
             Text(
                 text = item.description,
                 fontSize = 14.sp,
@@ -268,7 +273,6 @@ fun AssessmentCard(item: Assessment){
             )
 
             Spacer(modifier = Modifier.height(8.dp))
-
 
             Surface(
                 color = Color(0xFFE8F5E9),
